@@ -1,0 +1,597 @@
+/* Базовые стили для главной страницы */
+
+html
+{
+	display:flex;
+	height:100%;
+	font-family:Segoe UI;
+/* 	min-height:600px;
+	min-width:1067px; */
+}
+
+body
+{
+	flex-grow: 1;
+	display:flex;
+}
+
+.blur
+{
+	-webkit-filter: blur(5px);
+	-moz-filter: blur(5px);
+	-o-filter: blur(5px);
+	-ms-filter: blur(5px);
+	filter: blur(5px);
+}
+
+.elmedAll
+{
+	display:flex;
+	flex-grow: 1;
+	flex-direction:column;
+}
+
+.elmedWorkspace
+{
+	flex-grow:1;
+	flex-shrink:0;
+	display: flex;
+	padding-bottom:46px;
+}
+
+.elmedButtons
+{
+	position:fixed;
+	z-index:3;
+	bottom:0px;
+	width:100%;
+	display: flex;
+	flex-direction: row;
+	background: #0078d7;
+//	height:46px;
+}
+
+.elmedButton
+{
+	background: #0078d7;
+	color: white;
+	font-size: 120%;
+	padding:10px;
+	flex-shrink:0;
+}
+
+.elmedButton:hover
+{
+	background: #0a91ff;
+}
+
+.elmedMainmenu
+{
+	display:none;
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:301px;
+	height:calc(100% - 46px);
+	background: rgba(0,0,0,0.8);
+}
+
+.elmedLogo
+{
+	padding:20px;
+}
+
+.elmedLogo img
+{
+	width:100%;
+}
+
+.elmedMainmenuItems
+{
+	color:white;
+}
+
+.elmedMainmenuItems > div div
+{
+	padding-left:10px;
+}
+
+.elmedMainmenuItems span
+{
+	display:block;
+	font-size: 120%;
+	padding:10px;
+}
+	
+.elmedMainmenuItems span:hover
+{
+	background:rgba(255,255,255,0.2);
+}
+
+.elmedMainmenuInactivator
+{
+	display:none;
+	position:fixed;
+	top:0px;
+	right:0px;
+	height:calc(100% - 46px);
+	width:calc(100% - 300px);
+	background: rgba(0,0,0,0.2);
+}
+
+.elmedHeader
+{
+	color: #0078d7;
+	font-size: 120%;
+	border-bottom: 1px solid #0078d7;
+	padding: 5px;
+}
+
+/* Стили для экрана приветствия */
+
+.welcomeText
+{
+	flex-grow:1;
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	font-size:300%;
+	text-align:center;
+}
+
+/* Стили для регистратуры */
+
+.registryScheduleConfig
+{
+	flex-basis:300px;
+	flex-shrink:0;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #0078d7;
+}
+
+.registryCalendarFrom
+{
+	margin: 10px auto 10px auto;
+}
+
+.registryCalendarToWrapper
+{
+	display: flex;
+	flex-direction: row;
+	margin: 0px auto 10px auto;
+	padding-top:10px;
+	border-top: 1px solid #0078d7;
+	width:100%;
+}
+
+.registryCalendarTo
+{
+	margin-right:10px;
+}
+
+.registryCalendarCheckbox
+{
+	margin: 6px;
+}
+	
+.registryCalendarToLabel
+{
+	margin:5px 10px 0px 10px;
+}
+
+ .registryDoctorsBox
+{
+	flex-grow:1;
+	border-top: 1px solid #0078d7;
+	position: relative;
+	min-height:75px;
+}
+
+.registryDoctors
+{
+	position: absolute; 
+	left:10px;
+	right:10px;
+	top:10px;
+	padding-bottom:10px;
+}
+
+.registryGenerateButton
+{
+	margin: 10px;
+	text-align:center;
+	font-size: 100%;
+	cursor:pointer;
+}
+
+.registrySchedule
+{
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #0078d7;
+	border-left:none;
+}
+
+.registrySchelduleWorkspace
+{
+	flex-grow: 1;
+	display: flex;
+	height:100%;
+}
+
+.registryTabsBox
+{
+	flex-basis:210px;
+	flex-shrink:0;
+	border-right:1px solid #0078d7;
+	position:relative;
+}
+
+.registryTabs
+{
+	position: absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+}
+
+/* Убираем пустой контейнер для иконки во вкладке слева */
+.registryTabs .dx-treelist-icon-container
+{
+	display:none;
+}
+
+/* Убираем линии между столбцами в пустом пространстве донизу */
+.registryTabs .dx-row.dx-freespace-row.dx-column-lines
+{
+	display:none;
+}
+
+/* Костыль для возможности перетащить кнопку "обновить" из соседнего столбца*/
+.registryTabs .dx-treelist-text-content, .registryTabs .dx-treelist-cell-expandable
+{
+	overflow:visible !important;
+}
+
+
+
+.registryTabs .renewlink
+{
+	cursor:pointer;
+	position:relative;
+	top:1px;
+	left:129px;
+//	top:26px;
+//	left:170px;
+	height:22px;
+	width:26px;
+	color:#337ab7;
+	font-size:220%;
+	line-height:40%;
+	overflow:hidden;
+	display:none;
+	font-family:Segoe UI Symbol;
+	font-weight: lighter;
+}
+
+.registryTabs .dx-selection .renewlink
+{
+	display:block;
+}
+
+.dx-link.dx-link-delete
+{
+	position:relative;
+	top:-9px;
+	text-decoration:none;
+	color:#337ab7 !important;
+	font-size:200%;
+}
+
+.registryDoctorsSchelduleBox
+{
+	flex-grow: 1;
+	position:relative;
+}
+
+.registryDoctorsScheldule
+{
+	display:flex;
+	flex-direction:row;
+	position: absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+}
+
+.registryDoctorsScheldule li.dx-treeview-node[data-item-id="1"] > div:nth-child(1)
+{
+	border:1px rgba(0,0,0,0.4) solid;
+	border-radius:4px;
+	background:rgba(0,0,0,0.1);
+	background: linear-gradient(to bottom, rgba(0,0,0,0.01), rgba(0,0,0,0.1));
+	margin-left:5px;
+}
+
+.registryDoctorsScheldule li.dx-treeview-node[aria-level="3"] > div:nth-child(1)
+{
+	border:1px rgba(0,0,0,0.4) solid;
+	border-radius:4px;
+	margin:5px;
+	background: linear-gradient(to bottom, rgba(0,120,215,0.01), rgba(0,120,215,0.18));
+}
+
+.registryPatient
+{
+	background:red !important;
+}
+
+.registryReserve
+{
+	background:green !important;
+}
+
+/* Стили для всплывающего окна в регистратуре */
+
+.dx-popup-content
+{
+	display: flex;
+	padding:0;
+}
+
+.registryPatients
+{
+	flex-grow:1;
+	display: flex;
+	flex-direction: column;
+}
+
+.registryPatientButtons
+{
+	flex-basis: 110px;
+	display: flex;
+	flex-direction: row;
+	background: #0078d7;
+	color: white;
+	padding: 10px;
+	box-sizing: content-box;
+}
+
+.registryPatientButton
+{
+	width:100px;
+	margin-right:10px;
+	padding: 5px;
+	text-align:center;
+	display: flex;
+	flex-direction:column;
+	justify-content: space-between;
+	font-size:14px;
+	box-sizing: content-box;
+}
+
+.registryPatientButton:hover
+{
+	background: #0a91ff;
+}
+
+.registryPatientInputs
+{
+	padding:10px;
+	border: 1px solid #0078d7;
+}
+
+.registryPatientTableBox
+{
+	flex-grow: 1;
+	border: 1px solid #0078d7;
+}
+
+.registryPatientTable
+{
+	border-bottom:1px solid #dddddd;
+}
+
+.registryReservePopupBox
+{
+	width:100%;
+	padding:20px;
+	display:flex;
+	flex-direction:column;
+	justify-content:space-between;
+	align-items:stretch;
+}
+
+.registryReservePopupBox .dx-field-label
+{
+	width:35%;
+}
+
+.registryReservePopupBox .dx-field-value
+{
+	width:65% !important;
+}
+
+.registryContextMenuWrapper > div 
+{
+	position:absolute;
+	z-index:5;
+	font-size:14px;
+	color:rgb(51,51,51);
+}
+
+.registryContextMenuWrapper > div > div
+{
+	background:white;
+	border:1px solid rgb(221,221,221);
+	border-bottom:none;
+	padding:5px;
+}
+
+.registryContextMenuWrapper > div > div:hover
+{
+	background-color:rgb(230,230,230);
+}
+
+.registryContextMenuWrapper > div > div:last-child 
+{
+	border-bottom:1px solid rgb(221,221,221);
+}
+
+
+/* Стили для рабочего места */
+
+.workplaceConfig
+{
+	flex-basis:300px;
+	flex-shrink:0;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #0078d7;
+}
+
+.workplaceFilter
+{
+	padding:10px 10px 0 10px;
+}
+
+.workplaceDoctorFilter
+{
+	margin-bottom:10px;
+}
+
+.workplaceDatePicker
+{
+	width:100%;
+}
+
+.workplaceShowButton
+{
+	margin: 10px;
+	text-align:center;
+	font-size: 100%;
+	cursor:pointer;
+}
+
+.workplacePatientsBox
+{
+	flex-grow:1;
+	border-top: 1px solid #0078d7;
+	position:relative;
+}
+
+.workplacePatients
+{
+	position: absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+}
+
+.workplaceMain
+{
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	border: 1px solid #0078d7;
+	border-left:none;
+}
+
+.workplaceTilesOuterBox
+{
+	flex-grow:1;
+	position:relative;
+}
+
+.workplaceTiles
+{
+	display:flex;
+	flex-direction:row;
+	justify-content:flex-start;
+	align-items:flex-start;
+	position: absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+}
+
+.workplaceTilesInnerBox
+{
+	display:flex;
+	flex-direction:row;
+	justify-content:center;
+	align-items:center;
+	flex-wrap:wrap;
+	align-content:center;
+	margin:auto;
+}
+
+.workplaceTile
+{
+	flex-shrink:0;
+	cursor:pointer;
+	width:200px;
+	height:200px;
+	margin:15px;
+	display:flex;
+	flex-direction:column;
+	justify-content:center;
+	align-items:center;
+	font-size:30px;
+	text-align:center;
+	color:white;
+	background-image: none, linear-gradient(to bottom, #005aa3 0%, #0078d7 100%);
+}
+
+.workplaceTile:nth-child(3n-2)
+{
+	background-image: none, linear-gradient(to bottom, #dbac00 0%, #ffc90e 100%);
+}
+
+.workplaceTile:nth-child(3n-1)
+{
+	background-image: none, linear-gradient(to bottom, #038c2c 0%, #03c03c 100%);
+}
+
+.workplaceForms
+{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	padding:30px;
+	border:1px solid rgba(0,0,0,0.15);
+	border-radius:4px;
+}
+
+.workplaceFormsBox
+{
+	display:flex;
+	flex-direction:row;
+}
+
+.workplaceForm
+{
+	margin-right:40px;
+}
+
+.workplaceSaveButton
+{
+	width:300px;
+	margin: 30px auto 0px auto;
+	text-align:center;
+	font-size: 100%;
+	cursor:pointer;
+}
+
+
+
+
+
+
+
