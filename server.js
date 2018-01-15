@@ -46,6 +46,7 @@ function getApi(req, res, next) {					//Работа с API
 			if (postOptions.type=="registryPatientDelete"){responseFunc = registryPatientDelete;arg=postOptions;}
 			if (postOptions.type=="registryReserve"){responseFunc = registryReserve;arg=postOptions;}
 			if (postOptions.type=="registryReserveDelete"){responseFunc = registryReserveDelete;arg=postOptions;}
+			if (postOptions.type=="registryReserveEdit"){responseFunc = registryReserveEdit;arg=postOptions;}
 			if (postOptions.type=="workplaceGetDoctors"){responseFunc = workplaceGetDoctors;}
 
 			responseFunc(arg).then(function(e){res.end(JSON.stringify(e));});
@@ -98,9 +99,9 @@ function getApi(req, res, next) {					//Работа с API
 			let result = await new sql.Request().query(`DECLARE @Date1 CHAR(20) = '${begindate}';
 				DECLARE @Date2 CHAR(20) = '${enddate}';
 
-				SELECT reg.ID, COUNTER, DID, DOCTOR, BeginTime, PID, Reserve, FAM, IM, OT FROM
-				(SELECT ID, COUNTER, DID, DOCTOR, BeginTime, PID, Reserve FROM 
-				(SELECT s.ID ,CONCAT(CONVERT(nvarchar(10), BeginTime, 120),'-',DID) AS C, DID, CONCAT(FAM,' ',IM,' ',OT) as DOCTOR, BeginTime, PID, Reserve FROM (SELECT *
+				SELECT reg.ID, COUNTER, DID, DOCTOR, BeginTime, PID, Reserve, FAM, IM, OT, PacientName, PacientContact, PacientComent FROM
+				(SELECT ID, COUNTER, DID, DOCTOR, BeginTime, PID, Reserve, PacientName, PacientContact, PacientComent FROM 
+				(SELECT s.ID ,CONCAT(CONVERT(nvarchar(10), BeginTime, 120),'-',DID) AS C, DID, CONCAT(FAM,' ',IM,' ',OT) as DOCTOR, BeginTime, PID, Reserve, PacientName, PacientContact, PacientComent FROM (SELECT *
 					FROM [elmed_cat].[dbo].[YamedRegistry]) s
 					LEFT OUTER JOIN [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee] sp ON s.DID=sp.ID WHERE BeginTime > CONVERT(datetime, @Date1, 120) AND BeginTime < CONVERT(datetime, @Date2, 120) AND (`+doctorsstr+`)) tt
 					LEFT OUTER JOIN (SELECT ROW_NUMBER() OVER (ORDER BY [C] ASC)-1 as COUNTER, C FROM
@@ -123,8 +124,8 @@ function getApi(req, res, next) {					//Работа с API
 				if (rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items==undefined){rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items=[]}
 				let place=dateFormat(testdata[i].BeginTime, 'HH:MM')+' ';
 				let isFree;
-				if (testdata[i].PID!=null){place+='<pid>'+testdata[i].FAM+' '+testdata[i].IM+' '+testdata[i].OT+'</pid>';isFree=0;}else{if (testdata[i].Reserve==1){place+='<reserve>Резерв</reserve>';isFree=2;}else {place+='<free>Свободно</free>';isFree=1;}}
-				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items[rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items.length]={"html":place, "isFree":isFree, "prid":testdata[i].ID};
+				if (testdata[i].PID!=null){place+='<pid>'+testdata[i].FAM+' '+testdata[i].IM+' '+testdata[i].OT+'</pid>';isFree=0;}else{if (testdata[i].Reserve==1){place+='<reserve>'+testdata[i].PacientName+'</reserve>';isFree=2;}else {place+='<free>Свободно</free>';isFree=1;}}
+				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items[rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items.length]={"html":place, "isFree":isFree, "reserve":{"name":testdata[i].PacientName,"contact":testdata[i].PacientContact,"comment":testdata[i].PacientComent}, "prid":testdata[i].ID};
 			}
 			
   			for (i=0;i<rasp.length;i++){
@@ -202,6 +203,18 @@ function getApi(req, res, next) {					//Работа с API
 		}
 	}
 	
+	async function registryReserveEdit(data) {
+		try {
+			let name = data.name;
+			let contact = data.contact;
+			let comment = data.comment;
+			let prid = data.prid;
+			let result = await sql.query`UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PacientName=${name}, PacientContact=${contact}, PacientComent=${comment}, Reserve=1 WHERE ID=${prid} AND Reserve=1`;
+			return result.rowsAffected[0];
+		} catch (err) {
+			console.dir(err);
+		}
+	}
 }
 
 

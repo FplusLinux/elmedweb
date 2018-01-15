@@ -342,7 +342,7 @@ function elmedComponentsLoad(){
 								$(".registryContextMenuWrapper div").append("<div class='registryAdd'>Записать</div><div class='registryAddReserve'>Зарезервировать</div>");
 							} else {
 								if (e.itemData.isFree==2) {
-									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAdd'>Записать</div><div class='registryEdit'>Редактировать</div>");
+									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAdd'>Записать</div><div class='registryReserveEdit'>Редактировать</div>");
 								} else {
 									$(".registryContextMenuWrapper div").append("<div class='registryDelete'>Удалить</div>");
 								}
@@ -372,6 +372,8 @@ function elmedComponentsLoad(){
 												registryReservePopupContact.option("value","");
 												registryReservePopupComment.option("value","");
 												DevExpress.ui.notify("Время успешно зарезервировано","success");
+											} else {
+												DevExpress.ui.notify("Произошла ошибка при резервировании. Обновите расписание и попробуйте снова.","error");
 											}
 										}
 									}
@@ -383,6 +385,39 @@ function elmedComponentsLoad(){
 									DevExpress.ui.notify("Резерв успешно снят","success");
 								}
 							});
+							
+							
+							$(".registryContextMenuWrapper .registryReserveEdit").click(function(){
+								//alert(e.itemData.reserve.comment);
+								$("#registryReservePopup").dxPopup("show");
+								let registryReservePopupName = $("#registryReservePatient").dxTextBox({}).dxTextBox("instance");
+								let registryReservePopupContact = $("#registryReserveContact").dxTextBox({}).dxTextBox("instance");
+								let registryReservePopupComment = $("#registryReserveComment").dxTextArea({}).dxTextArea("instance");
+								registryReservePopupName.option("value",e.itemData.reserve.name);
+								registryReservePopupContact.option("value",e.itemData.reserve.contact);
+								registryReservePopupComment.option("value",e.itemData.reserve.comment);
+								$("#registryReservePopupButton").dxButton({
+									text: "OK",
+									type: "normal",
+									width:"122px",
+									onClick: function() {
+										if (registryReservePopupName.option("value")==''){DevExpress.ui.notify("Имя пациента обязательно к заполнению","error");} else {
+											if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveEdit","prid":e.itemData.prid, "name": registryReservePopupName.option("value"), "contact": registryReservePopupContact.option("value"), "comment": registryReservePopupComment.option("value")}, async: false}).responseText){
+												$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
+												$("#registryReservePopup").dxPopup("hide");
+												registryReservePopupName.option("value","");
+												registryReservePopupContact.option("value","");
+												registryReservePopupComment.option("value","");
+												DevExpress.ui.notify("Резерв успешно изменен","success");
+											} else {
+												DevExpress.ui.notify("Произошла ошибка при изменении резерва. Обновите расписание и попробуйте снова.","error");
+											}
+										}
+									}
+								});
+							});
+							
+							
 						}
 					},
 					onItemClick: function(e)
