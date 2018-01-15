@@ -29,39 +29,48 @@ function getFile(req, res, next) {					//Роутер для загрузки ф
 
 function getApi(req, res, next) {					//Работа с API
 
-	let dataString="";
-	
 	req.on('data', function(chunk){
 		
-		dataString+=chunk;
 		
-		req.on('end', function () {
-			res.writeHead(200, {'Content-Type': 'application/json; charset=utf8'});
-			postOptions=querystring.parse(dataString);
-			let arg='';
-			if (postOptions.type=="registryGetDoctors"){responseFunc = registryGetDoctors;}						//ПЕРЕДЕЛАТЬ!
-			if (postOptions.type=="registryGetSheldule"){responseFunc = registryGetSheldule;arg=postOptions;}
-			if (postOptions.type=="registryGetPatients"){responseFunc = registryGetPatients;}
-			if (postOptions.type=="registryPatientAppointment"){responseFunc = registryPatientAppointment;arg=postOptions;}
-			if (postOptions.type=="registryPatientDelete"){responseFunc = registryPatientDelete;arg=postOptions;}
-			if (postOptions.type=="registryReserve"){responseFunc = registryReserve;arg=postOptions;}
-			if (postOptions.type=="registryReserveDelete"){responseFunc = registryReserveDelete;arg=postOptions;}
-			if (postOptions.type=="workplaceGetDoctors"){responseFunc = workplaceGetDoctors;}
-
-			responseFunc(arg).then(function(e){res.end(JSON.stringify(e));});
-		});
+		res.writeHead(200, {'Content-Type': 'application/json; charset=utf8'});
 		
+		postOptions=querystring.parse(""+chunk);
+		console.log(''+chunk);
+		arg='';
+		//console.log(postOptions.type);
+		
+		if (postOptions.type=="registryGetDoctors"){responseFunc = registryGetDoctors;}						//ПЕРЕДЕЛАТЬ!
+		if (postOptions.type=="registryGetSheldule"){responseFunc = registryGetSheldule;arg=postOptions;}
+		if (postOptions.type=="registryGetPatients"){responseFunc = registryGetPatients;}
+		if (postOptions.type=="registryPatientAppointment"){responseFunc = registryPatientAppointment;arg=postOptions;}
+		if (postOptions.type=="registryPatientDelete"){responseFunc = registryPatientDelete;arg=postOptions;}
+		if (postOptions.type=="registryReserve"){responseFunc = registryReserve;arg=postOptions;}
+		if (postOptions.type=="registryReserveDelete"){responseFunc = registryReserveDelete;arg=postOptions;}
+		if (postOptions.type=="workplaceGetDoctors"){responseFunc = workplaceGetDoctors;}
+		
+		responseFunc(arg).then(function(e){res.end(JSON.stringify(e));});
+		
+		
+	});
+	
+	
+	req.on('done', function(){
+		////sql.close();
 	});
 	
 	
 	async function registryGetDoctors() {					//Получение списка врачей для блока "Докторбокс" регистратуры
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let result = await sql.query`SELECT did, doctor, profilename, PRCOUNT AS profileid FROM (
 			SELECT CAST(d.ID AS NVARCHAR(6)) AS did, FIO as doctor, p.PRNAME AS profilename, PROFIL_ID as profileid
 			FROM [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee] d
 			LEFT OUTER JOIN [elmed_cat].[dbo].[V002] p ON d.PROFIL_ID = p.Id) employees
 			LEFT OUTER JOIN (SELECT [PROFIL_ID] AS PRID, ROW_NUMBER() OVER (ORDER BY [PROFIL_ID] ASC)-1 AS PRCOUNT FROM
 			(SELECT DISTINCT [PROFIL_ID] FROM [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee]) profiles) profiles2 ON employees.profileid = profiles2.PRID`;
+			//let test = await //sql.close();
+			//console.log(test);
 			
 			var testdata = result.recordset;
 			var testdata2 = 
@@ -82,18 +91,28 @@ function getApi(req, res, next) {					//Работа с API
 			return testdata2;
 			
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close().then(function(){console.log("00000000000000000000000000000000000000000000")});
 		}
 	}
 	
 	async function registryGetSheldule(data) {
 
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let begindate = dateFormat(data.date1, 'yyyymmdd');
+			//console.log('xxx '+JSON.stringify(data));
+			//console.log('zzz '+data.date1+' zzz');
 			let enddate = (data.date2==0)?dateFormat(new Date(Date.parse(data.date1)+86400000), 'yyyymmdd'):dateFormat(new Date(Date.parse(data.date2)+86400000), 'yyyymmdd');
 			
 			let doctorsstr;
 			if (typeof(data["doctors[]"])=='string') {doctorsstr = 'DID='+data["doctors[]"];} else {doctorsstr = 'DID='+data["doctors[]"].join(' OR DID=');}
+			
 			
 			let result = await new sql.Request().query(`DECLARE @Date1 CHAR(20) = '${begindate}';
 				DECLARE @Date2 CHAR(20) = '${enddate}';
@@ -108,6 +127,8 @@ function getApi(req, res, next) {					//Работа с API
 					LEFT OUTER JOIN [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee] sp ON sl.DID=sp.ID WHERE BeginTime > CONVERT(datetime, @Date1, 120) AND BeginTime < CONVERT(datetime, @Date2, 120) AND (`+doctorsstr+`)) sd) ff
 					ON tt.C=ff.C) reg
 				LEFT OUTER JOIN (SELECT ID, FAM, IM, OT FROM [elmed_cat].[dbo].[PACIENT]) pac ON reg.PID=pac.ID`);
+			//let test = await //sql.close();
+			//console.log(test);
 			
 			let testdata = result.recordset;
 			let rasp=[];
@@ -136,69 +157,131 @@ function getApi(req, res, next) {					//Работа с API
 			return rasp;
 			
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function workplaceGetDoctors() {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let result = await sql.query`SELECT CONCAT(FAM,' ',IM,' ',OT) as doctor FROM [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee]`;
+			//let test = await //sql.close();
+			//console.log(test);
 			return result.recordset;
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function registryGetPatients() {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let result = await sql.query`SELECT TOP (10000) ID, FAM, IM, OT, DR, NPOLIS FROM [elmed_cat].[dbo].[PACIENT]`;
+			//let test = await //sql.close();
+			//console.log(test);
 			return result.recordset;
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function registryPatientAppointment(data) {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let pid = data.pid;
 			let prid = data.prid;
+			//console.log(pid+' '+prid);
+			//UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PID=542639 WHERE ID=1111
 			let result = await sql.query`UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PID=${pid} WHERE ID=${prid} AND PID IS NULL`;
+			//let test = await //sql.close();
+			//console.log(test);
+			//console.log(result.rowsAffected[0]);
 			return result.rowsAffected[0];
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function registryPatientDelete(data) {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let prid = data.prid;
 			let result = await sql.query`UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PID=NULL WHERE ID=${prid}`;
+			//let test = await //sql.close();
+			//console.log(test);
 			return result.rowsAffected[0];
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function registryReserve(data) {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let name = data.name;
 			let contact = data.contact;
 			let comment = data.comment;
 			let prid = data.prid;
 			let result = await sql.query`UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PacientName=${name}, PacientContact=${contact}, PacientComent=${comment}, Reserve=1 WHERE ID=${prid} AND Reserve=0`;
+			//let test = await //sql.close();
+			//console.log(test);
 			return result.rowsAffected[0];
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
 	async function registryReserveDelete(data) {
 		try {
+			//const pool = await sql.connect(config);
+			//console.log(pool);
 			let prid = data.prid;
 			let result = await sql.query`UPDATE [elmed_cat].[dbo].[YamedRegistry] SET PacientName=NULL, PacientContact=NULL, PacientComent=NULL, Reserve=0 WHERE ID=${prid} AND Reserve=1`;
+			//let test = await //sql.close();
+			//console.log(test);
 			return result.rowsAffected[0];
 		} catch (err) {
+			////sql.close();
 			console.dir(err);
+			//let test = await //sql.close();
+			//console.log('!!!!!!!!!!'+JSON.stringify(test)+'!!!!!!!!!!');
+		} finally {
+			//sql.close();
 		}
 	}
 	
@@ -213,9 +296,14 @@ function testApi(req, res, next) {
 		
 		async function testfn() {
 		try {
+			//const pool = await sql.connect(config);
+			
 			let result = await pool.request()
             .query(`SELECT TOP (1000) DID, CONCAT(FAM,' ',IM,' ',OT) as DOCTOR, BeginTime, PID, Reserve FROM (SELECT * FROM [elmed_cat].[dbo].[YamedRegistry]) s 
 			LEFT OUTER JOIN [elmed_cat].[dbo].[Yamed_Spr_MedicalEmployee] sp ON s.DID=sp.ID WHERE BeginTime > {d '2017-11-01'} AND BeginTime < {d '2017-12-31'}`)
+			//let ololo='СЕМЕНОВ';
+			//const result = await sql.query('SELECT TOP(1000) [FAM],[IM],[OT],[DR],[NPOLIS] FROM [elmed_cat].[dbo].[PACIENT]');
+			//sql.close();
 			
 			var testdata = result.recordset;
 			
