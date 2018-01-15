@@ -119,7 +119,6 @@ function elmedComponentsLoad(){
 			break;
 			default:
 				underConstruction();
-				//alert('Пункт меню не задан');
 		}
 	}
 	
@@ -243,7 +242,7 @@ function elmedComponentsLoad(){
 				registryTabs.refresh();
 				//Добавление вкладки закончилось
 				registryShelduleDraw(registryDrawArgument1); 			//Первичная отрисовка расписания 
-			} else {alert('Ни одного врача не выбрано!');}
+			} else {DevExpress.ui.notify("Ни одного врача не выбрано.","error");}
 		});
 		
 		//Модуль списка вкладок
@@ -318,7 +317,6 @@ function elmedComponentsLoad(){
 			}
 
 			$(".registryDoctorsScheldule").empty();
-			//alert(JSON.stringify(sheldule));
 			for (i = 0; i < sheldule.length; i++) {
 				
 				$("<div style='min-width:290px;'><div class='doctorsheldule"+i+"' style='width:auto;margin:15px;'></div></div>").appendTo(".registryDoctorsScheldule");
@@ -392,7 +390,6 @@ function elmedComponentsLoad(){
 								}
 							});
 							$(".registryContextMenuWrapper .registryReserveEdit").click(function(){
-								//alert(e.itemData.reserve.comment);
 								$("#registryReservePopup").dxPopup("show");
 								let registryReservePopupName = $("#registryReservePatient").dxTextBox({}).dxTextBox("instance");
 								let registryReservePopupContact = $("#registryReserveContact").dxTextBox({}).dxTextBox("instance");
@@ -442,6 +439,7 @@ function elmedComponentsLoad(){
 		
 		function registryShowPopup(prid,deleteReserve){		//Показ всплывающего окна для записи пациента
 			$("#registryPopup").dxPopup("show");
+			$('.registryAppointment').click(function(){DevExpress.ui.notify("Выберите пациента, которого хотите записать.","error");});
 			var registryPatientTable = $(".registryPatientTable").dxDataGrid({
 			dataSource: registryPatients,
 			selection: {
@@ -482,22 +480,24 @@ function elmedComponentsLoad(){
 			],
 			onSelectionChanged:function(selectedItems){
 				$('.registryAppointment').unbind('click');
-				$('.registryAppointment').click(selectedItems.selectedRowsData[0].ID,function(e){
-					//alert('Пациент '+e.data+' записывается на время '+prid);
-					if (+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientAppointment","pid":e.data ,"prid":prid}, async: false}).responseText) {
-						$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
-						$("#registryPopup").dxPopup("hide");
-						if (deleteReserve){
-							if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":prid}, async: false}).responseText){
-							} else {
-								DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
+				if (selectedItems.selectedRowsData[0]){
+					$('.registryAppointment').click(selectedItems.selectedRowsData[0].ID,function(e){
+						if (+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientAppointment","pid":e.data ,"prid":prid}, async: false}).responseText) {
+							$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
+							selectedItems.component.clearSelection();
+							$("#registryPopup").dxPopup("hide");
+							if (deleteReserve){
+								if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":prid}, async: false}).responseText){
+								} else {
+									DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
+								}
 							}
+							DevExpress.ui.notify("Пациент записан","success");
+						} else {
+							DevExpress.ui.notify("Ошибка! На это время уже записан пациент. Обновите расписание.","error");
 						}
-						DevExpress.ui.notify("Пациент записан","success");
-					} else {
-						DevExpress.ui.notify("Ошибка! На это время уже записан пациент. Обновите расписание.","error");
-					}
-				});
+					});
+				}
 			}
 			}).dxDataGrid("instance");
 		}
@@ -576,7 +576,6 @@ function elmedComponentsLoad(){
 				break;
 				default:
 					underConstruction();
-					//alert('Плитка не задана');
 			}
 		}
 		

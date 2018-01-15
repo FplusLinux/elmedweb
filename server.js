@@ -39,7 +39,7 @@ function getApi(req, res, next) {					//Работа с API
 			res.writeHead(200, {'Content-Type': 'application/json; charset=utf8'});
 			postOptions=querystring.parse(dataString);
 			let arg='';
-			if (postOptions.type=="registryGetDoctors"){responseFunc = registryGetDoctors;}						//ПЕРЕДЕЛАТЬ!
+			if (postOptions.type=="registryGetDoctors"){responseFunc = registryGetDoctors;}						//ПЕРЕДЕЛАТЬ ЭТОТ БЛОК УСЛОВИЙ!
 			if (postOptions.type=="registryGetSheldule"){responseFunc = registryGetSheldule;arg=postOptions;}
 			if (postOptions.type=="registryGetPatients"){responseFunc = registryGetPatients;}
 			if (postOptions.type=="registryPatientAppointment"){responseFunc = registryPatientAppointment;arg=postOptions;}
@@ -119,10 +119,10 @@ function getApi(req, res, next) {					//Работа с API
 				rasp[testdata[i].COUNTER][0].isExpanded=true;
 				if (rasp[testdata[i].COUNTER][0].items==undefined){rasp[testdata[i].COUNTER][0].items=[];}
 				if (rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')]==undefined){rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')]={};}
-				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].text=dateFormat(testdata[i].BeginTime, 'HH')+':00';
+				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].text=dateFormat(testdata[i].BeginTime-10800000, 'HH')+':00';
 				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].isExpanded=true;
 				if (rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items==undefined){rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items=[]}
-				let place=dateFormat(testdata[i].BeginTime, 'HH:MM')+' ';
+				let place=dateFormat(testdata[i].BeginTime-10800000, 'HH:MM')+' ';
 				let isFree;
 				if (testdata[i].PID!=null){place+='<pid>'+testdata[i].FAM+' '+testdata[i].IM+' '+testdata[i].OT+'</pid>';isFree=0;}else{if (testdata[i].Reserve==1){place+='<reserve>'+testdata[i].PacientName+'</reserve>';isFree=2;}else {place+='<free>Свободно</free>';isFree=1;}}
 				rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items[rasp[testdata[i].COUNTER][0].items[dateFormat(testdata[i].BeginTime, 'HH')].items.length]={"html":place, "isFree":isFree, "reserve":{"name":testdata[i].PacientName,"contact":testdata[i].PacientContact,"comment":testdata[i].PacientComent}, "prid":testdata[i].ID};

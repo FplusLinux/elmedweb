@@ -416,6 +416,8 @@ body
 	width:65% !important;
 }
 
+/* Стили контекстного меню */
+
 .registryContextMenuWrapper > div 
 {
 	position:absolute;
