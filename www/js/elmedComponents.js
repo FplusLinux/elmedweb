@@ -342,16 +342,20 @@ function elmedComponentsLoad(){
 								$(".registryContextMenuWrapper div").append("<div class='registryAdd'>Записать</div><div class='registryAddReserve'>Зарезервировать</div>");
 							} else {
 								if (e.itemData.isFree==2) {
-									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAdd'>Записать</div><div class='registryReserveEdit'>Редактировать</div>");
+									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAddFromReserve'>Записать</div><div class='registryReserveEdit'>Редактировать</div>");
 								} else {
 									$(".registryContextMenuWrapper div").append("<div class='registryDelete'>Удалить</div>");
 								}
 							}
-							$(".registryContextMenuWrapper .registryAdd").click(function(){registryShowPopup(e.itemData.prid);});
+							$(".registryContextMenuWrapper .registryAdd").click(function(){
+								registryShowPopup(e.itemData.prid);
+							});
 							$(".registryContextMenuWrapper .registryDelete").click(function(){
 								if(+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientDelete","prid":e.itemData.prid}, async: false}).responseText){
 									$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
 									DevExpress.ui.notify("Пациент удалён","success");
+								} else {
+									DevExpress.ui.notify("Произошла ошибка при удалении записи. Обновите расписание и попробуйте снова.","error");
 								}
 							});
 							$(".registryContextMenuWrapper .registryAddReserve").click(function(){		//Навешивание на кнопку "Резерв" события показа всплывающего окна с данными для резервирования
@@ -383,10 +387,10 @@ function elmedComponentsLoad(){
 								if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":e.itemData.prid}, async: false}).responseText){
 									$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
 									DevExpress.ui.notify("Резерв успешно снят","success");
+								} else {
+									DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
 								}
 							});
-							
-							
 							$(".registryContextMenuWrapper .registryReserveEdit").click(function(){
 								//alert(e.itemData.reserve.comment);
 								$("#registryReservePopup").dxPopup("show");
@@ -416,6 +420,10 @@ function elmedComponentsLoad(){
 									}
 								});
 							});
+							$(".registryContextMenuWrapper .registryAddFromReserve").click(function(){
+								registryShowPopup(e.itemData.prid,1);
+							});
+							
 							
 							
 						}
@@ -432,8 +440,7 @@ function elmedComponentsLoad(){
 		}
 		
 		
-		function registryShowPopup(prid)		//Показ всплывающего окна для записи пациента
-		{
+		function registryShowPopup(prid,deleteReserve){		//Показ всплывающего окна для записи пациента
 			$("#registryPopup").dxPopup("show");
 			var registryPatientTable = $(".registryPatientTable").dxDataGrid({
 			dataSource: registryPatients,
@@ -480,6 +487,12 @@ function elmedComponentsLoad(){
 					if (+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientAppointment","pid":e.data ,"prid":prid}, async: false}).responseText) {
 						$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
 						$("#registryPopup").dxPopup("hide");
+						if (deleteReserve){
+							if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":prid}, async: false}).responseText){
+							} else {
+								DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
+							}
+						}
 						DevExpress.ui.notify("Пациент записан","success");
 					} else {
 						DevExpress.ui.notify("Ошибка! На это время уже записан пациент. Обновите расписание.","error");
