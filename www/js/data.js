@@ -8,14 +8,14 @@ var elmedMainmenuData = 		//Данные для создания пунктов 
 			"items":
 			[
 				{
-					"name":"Рабочее место врача",
-					"icon":"angle-right",
-					"wlink":"Workplace"
-				},
-				{
 					"name":"Регистратура",
 					"icon":"angle-right",
 					"wlink":"Registry"
+				},
+				{
+					"name":"Рабочее место врача",
+					"icon":"angle-right",
+					"wlink":"Workplace"
 				},
 				{
 					"name":"Направление",
@@ -33,18 +33,28 @@ var elmedMainmenuData = 		//Данные для создания пунктов 
 					"name":"Госпитализация",
 					"icon":"angle-right",
 					"wlink":"underConstruction"
-				},
-				{
+				}
+/* 				{
 					"name":"Приёмное отделение",
 					"icon":"angle-right",
 					"wlink":"underConstruction"
-				}
+				} */
 			]
 		},
 		{
-			"name":"Пункт со сылкой",
+			"name":"Учёт",
+			"icon":"book",
+			"wlink":"underConstruction"
+		},
+		{
+			"name":"Отчёты",
 			"icon":"file-text-o",
-			"wlink":"menulink6"
+			"wlink":"underConstruction"
+		},
+		{
+			"name":"Информирование",
+			"icon":"bell",
+			"wlink":"underConstruction"
 		}
 	]	
 };

@@ -332,15 +332,15 @@ function elmedComponentsLoad(){
   					onItemContextMenu: function(e){
 						e.jQueryEvent.preventDefault();
 						if (!e.itemData.items){
-							$("body").append("<div class='registryContextMenuWrapper' style='position:fixed;width:100%;height:100%;background:rgba(255,255,255,0);z-index:4;'></div>");
+							$("body").append("<div class='registryContextMenuWrapper'></div>");
 							$(".registryContextMenuWrapper").click(function(){$(".registryContextMenuWrapper").remove();});
 							$(".registryContextMenuWrapper").contextmenu(function(){$(".registryContextMenuWrapper").remove();});
 							$(".registryContextMenuWrapper").append("<div style='top:"+(e.jQueryEvent.pageY+1)+"px;left:"+(e.jQueryEvent.pageX+1)+"px;'></div>");
 							if (e.itemData.isFree==1) {
-								$(".registryContextMenuWrapper div").append("<div class='registryAdd'>Записать</div><div class='registryAddReserve'>Зарезервировать</div>");
+								$(".registryContextMenuWrapper div").append("<div class='registryAdd'>Записать</div><div class='registrySecond'>Вторичный приём</div><div class='registryAddReserve'>Зарезервировать</div>");
 							} else {
 								if (e.itemData.isFree==2) {
-									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAddFromReserve'>Записать</div><div class='registryReserveEdit'>Редактировать</div>");
+									$(".registryContextMenuWrapper div").append("<div class='registryDeleteReserve'>Снять резерв</div><div class='registryAddFromReserve'>Записать</div><div class='registrySecond'>Вторичный приём</div><div class='registryReserveEdit'>Редактировать</div>");
 								} else {
 									$(".registryContextMenuWrapper div").append("<div class='registryDelete'>Удалить</div>");
 								}
@@ -420,9 +420,6 @@ function elmedComponentsLoad(){
 							$(".registryContextMenuWrapper .registryAddFromReserve").click(function(){
 								registryShowPopup(e.itemData.prid,1);
 							});
-							
-							
-							
 						}
 					},
 					onItemClick: function(e)
@@ -440,6 +437,13 @@ function elmedComponentsLoad(){
 		function registryShowPopup(prid,deleteReserve){		//Показ всплывающего окна для записи пациента
 			$("#registryPopup").dxPopup("show");
 			$('.registryAppointment').click(function(){DevExpress.ui.notify("Выберите пациента, которого хотите записать.","error");});
+			$('.registryPrint').click(function(e){
+				$('body').append('<div class="registryPrintContextMenuWrapper"></div>');
+				$('.registryPrintContextMenuWrapper').click(function(){$('.registryPrintContextMenuWrapper').remove();});
+				$('.registryPrintContextMenuWrapper').contextmenu(function(){$('.registryPrintContextMenuWrapper').remove();});
+				$(".registryPrintContextMenuWrapper").append("<div style='top:"+(e.pageY+1)+"px;right:"+($(window).width()-e.pageX)+"px;'><div>Согласие на обработку персональных данных</div><div>Договор на оказание медицинских услуг</div><div>Счёт на оплату</div></div>");
+			});
+			
 			var registryPatientTable = $(".registryPatientTable").dxDataGrid({
 			dataSource: registryPatients,
 			selection: {
