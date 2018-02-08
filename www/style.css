@@ -125,6 +125,33 @@ body
 	font-size: 120%;
 	border-bottom: 1px solid #0078d7;
 	padding: 5px;
+	display:flex;
+	flex-direction:row;
+	justify-content:space-between;
+}
+
+.registrySheldulePrint
+{
+	cursor:pointer;
+}
+
+.registrySheldulePrint:hover
+{
+	text-decoration:underline;
+}
+
+.registryPrintButtonsWrapper
+{
+	display:flex;
+	flex-direction:row;
+	justify-content:center;
+	flex-wrap:wrap;
+}
+
+.registryPrintCheckboxes
+{
+	text-align:center;
+	padding:10px;
 }
 
 /* Стили для экрана приветствия */

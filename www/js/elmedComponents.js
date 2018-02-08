@@ -132,6 +132,7 @@ function elmedComponentsLoad(){
 	
 	function registryComponentsLoad()			//Функция загрузки компонентов регистратуры
 	{
+		let sheldule;
 		//Объявление всплывающего окна для регистрации пациента
 		$("#registryPopup").dxPopup({
 			title: "Регистрация пациента"
@@ -144,6 +145,74 @@ function elmedComponentsLoad(){
 			height: "320px"
 		});	
 	
+		//Объявление всплывающего окна для печати расписания
+		$("#registryPrintPopup").dxPopup({
+			title: "Печать расписания"
+		});
+		
+		//Назначение события по клику на "Печать расписания"
+		$('.registrySheldulePrint').click(function(){
+			$("#registryPrintPopup").dxPopup("show");
+			
+			$(".registryPrintSelectAll").dxButton({
+				text: "Выделить всех",
+				type: "normal",
+				onClick: function(e) {
+					//DevExpress.ui.notify("Идёт отправка задания на печать");
+				}
+			});
+			
+			$(".registryPrintDeselectAll").dxButton({
+				text: "Снять выделение",
+				type: "normal",
+				onClick: function(e) {
+					//DevExpress.ui.notify("Идёт отправка задания на печать");
+				}
+			});
+			
+			$(".registryPrintButton").dxButton({
+				text: "Печать",
+				type: "default",
+				onClick: function(e) {
+					DevExpress.ui.notify("Идёт отправка задания на печать");
+				}
+			});
+			
+			$('.registryPrintButtonsWrapper').empty();
+			for(i=0;i<sheldule.length;i++){
+				$('.registryPrintButtonsWrapper').append('<div style="display:flex;flex=direction:row;align-items:center;border:1px solid rgba(0,0,0,0.1);border-radius:5px;margin:10px;padding:10px;width:300px;"><div class="registryPrintCheckbox'+i+'" style="margin:5px 10px 5px 5px;"></div>'+sheldule[i][0].html+'</div>');
+				$(".registryPrintCheckbox"+i).dxCheckBox({value: true});
+				$(".registryPrintCheckbox"+i).parent().click(i,function(e){
+					if ($(this).children(".registryPrintCheckbox"+e.data).dxCheckBox('instance').option('value')==true && !$(e.target).is('span.dx-checkbox-icon')){
+						$(this).children(".registryPrintCheckbox"+e.data).dxCheckBox('instance').option('value',false);
+					} else {
+						if (!$(e.target).is('span.dx-checkbox-icon')){
+							$(this).children(".registryPrintCheckbox"+e.data).dxCheckBox('instance').option('value',true);
+						}
+					}
+				});
+			}			
+			
+			$('.registryPrintDeselectAll').click(function(){
+				for(i=0;i<sheldule.length;i++){
+					$(".registryPrintCheckbox"+i).dxCheckBox('instance').option('value',false);
+				}
+			});
+			
+			$('.registryPrintSelectAll').click(function(){
+				for(i=0;i<sheldule.length;i++){
+					$(".registryPrintCheckbox"+i).dxCheckBox('instance').option('value',true);
+				}
+			});
+			
+			$('.registryPrintCheckboxes').dxScrollView({
+				scrollByContent: true,
+				scrollByThumb: true,
+				showScrollbar: "onScroll"
+			});
+			
+		})
+		
 		//Модуль календаря
 		var registryCalendarFrom = $(".registryCalendarFrom").dxCalendar({
 			value: new Date(),
@@ -292,7 +361,6 @@ function elmedComponentsLoad(){
 		
 		//Функция отрисовки расписания
 		function registryShelduleDraw(registryDrawArgument1,registryDrawArgument2){
-			let sheldule;
 			if (registryDrawArgument2){
 				sheldule = registrySheldulesStorage[registryDrawArgument2].sheldule;
 			} else {
@@ -445,64 +513,64 @@ function elmedComponentsLoad(){
 			});
 			
 			var registryPatientTable = $(".registryPatientTable").dxDataGrid({
-			dataSource: registryPatients,
-			selection: {
-				mode: "single"
-			},
-			paging: {
-				pageSize: 10
-			},
-			filterRow: {
-				visible: true
-			},
-			columns: [
-				{
-					dataField:"ID",
-					caption:"ID",
-					width:"80px"
+				dataSource: registryPatients,
+				selection: {
+					mode: "single"
 				},
-				{
-					dataField:"FAM",
-					caption:"Фамилия"
+				paging: {
+					pageSize: 10
 				},
-				{
-					dataField:"IM",
-					caption:"Имя"
+				filterRow: {
+					visible: true
 				},
-				{
-					dataField:"OT",
-					caption:"Отчество"
-				},
-				{
-					dataField:"DR",
-					caption:"Дата рождения"
-				},
-				{
-					dataField:"NPOLIS",
-					caption:"СНИЛС"
-				}
-			],
-			onSelectionChanged:function(selectedItems){
-				$('.registryAppointment').unbind('click');
-				if (selectedItems.selectedRowsData[0]){
-					$('.registryAppointment').click(selectedItems.selectedRowsData[0].ID,function(e){
-						if (+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientAppointment","pid":e.data ,"prid":prid}, async: false}).responseText) {
-							$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
-							selectedItems.component.clearSelection();
-							$("#registryPopup").dxPopup("hide");
-							if (deleteReserve){
-								if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":prid}, async: false}).responseText){
-								} else {
-									DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
+				columns: [
+					{
+						dataField:"ID",
+						caption:"ID",
+						width:"80px"
+					},
+					{
+						dataField:"FAM",
+						caption:"Фамилия"
+					},
+					{
+						dataField:"IM",
+						caption:"Имя"
+					},
+					{
+						dataField:"OT",
+						caption:"Отчество"
+					},
+					{
+						dataField:"DR",
+						caption:"Дата рождения"
+					},
+					{
+						dataField:"NPOLIS",
+						caption:"СНИЛС"
+					}
+				],
+				onSelectionChanged:function(selectedItems){
+					$('.registryAppointment').unbind('click');
+					if (selectedItems.selectedRowsData[0]){
+						$('.registryAppointment').click(selectedItems.selectedRowsData[0].ID,function(e){
+							if (+$.ajax({type: "POST", url: "api", data:{"type":"registryPatientAppointment","pid":e.data ,"prid":prid}, async: false}).responseText) {
+								$('.registryTabs .tab'+registryTabs.getSelectedRowsData()[0].id).click();
+								selectedItems.component.clearSelection();
+								$("#registryPopup").dxPopup("hide");
+								if (deleteReserve){
+									if(+$.ajax({type: "POST", url: "api", data:{"type":"registryReserveDelete","prid":prid}, async: false}).responseText){
+									} else {
+										DevExpress.ui.notify("Произошла ошибка при удалении резерва. Обновите расписание и попробуйте снова.","error");
+									}
 								}
+								DevExpress.ui.notify("Пациент записан","success");
+							} else {
+								DevExpress.ui.notify("Ошибка! На это время уже записан пациент. Обновите расписание.","error");
 							}
-							DevExpress.ui.notify("Пациент записан","success");
-						} else {
-							DevExpress.ui.notify("Ошибка! На это время уже записан пациент. Обновите расписание.","error");
-						}
-					});
+						});
+					}
 				}
-			}
 			}).dxDataGrid("instance");
 		}
 			

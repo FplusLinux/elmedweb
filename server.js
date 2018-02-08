@@ -222,7 +222,12 @@ function testApi(req, res, next) {
 		
 		res.writeHead(200, {'Content-Type': 'application/json; charset=utf8'});
 		
-		testfn().then(function(e){res.end(JSON.stringify(e));});
+		var ipaddress = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress).split(",")[0];
+		console.log(ipaddress);
+		
+		res.end();
+		
+/* 		testfn().then(function(e){res.end(JSON.stringify(e));});
 		
 		async function testfn() {
 		try {
@@ -237,7 +242,7 @@ function testApi(req, res, next) {
 			} catch (err) {
 			console.dir(err);
 			}
-		}
+		} */
 	
 }
 
